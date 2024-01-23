@@ -91,7 +91,6 @@ function addProduct(product) {
 }
 
 
-
 // Function to make an AJAX request to update a product
 function updateProduct(index, product) {
     console.log('Updating product:', index, product);

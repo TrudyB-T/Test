@@ -185,12 +185,14 @@ app.post('/login-user', async (req, res) => {
 
 // API endpoint to get products
 app.get('/api/products', (req, res) => {
-  db('products').select('*')
-    .then((results) => res.json(results))
-    .catch((err) => {
-      console.error('Error getting products:', err);
-      res.status(500).send('Internal Server Error');
-    });
+  const userId = req.session.userId;
+
+ db('products').select('*').where('user_id', userId)
+   .then((results) => res.json(results))
+   .catch((err) => {
+     console.error('Error getting products:', err);
+     res.status(500).send('Internal Server Error');
+   });
 });
 
 
