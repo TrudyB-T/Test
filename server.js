@@ -224,21 +224,26 @@ app.put('/api/products/:id', (req, res) => {
   const productId = req.params.id;
   const updatedProduct = req.body;
 
-  // Check for existing product with the same name and category
-  db('products').select('*').where('name', updatedProduct.name).where('cate', updatedProduct.cate).whereNot('id', productId)
-    .then((results) => {
-      if (results.length > 0) {
-        // Product with the same name and category already exists
-        res.status(400).json({ error: 'Product with the same name and category already exists' });
-      } else {
-        // No conflict, proceed with the update
-        db('products').where('id', productId).update({
-          name: updatedProduct.name,
-          price: updatedProduct.price,
-          cate: updatedProduct.cate,
-          desc: updatedProduct.desc,
-          quant: updatedProduct.quant
-        })
+   // Check for existing product with the same ID
+   db('products')
+   .select('*')
+   .where('id', '<>', productId) // Exclude the current product by ID
+   .andWhere('id', updatedProduct.id) // Check for another product with the same ID
+   .then((results) => {
+     if (results.length > 0) {
+       // Product with the same ID already exists
+       res.status(400).json({ error: 'Product with the same ID already exists' });
+     } else {
+       // No conflict, proceed with the update
+       db('products')
+         .where('id', productId)
+         .update({
+           name: updatedProduct.name,
+           price: updatedProduct.price,
+           cate: updatedProduct.cate,
+           desc: updatedProduct.desc,
+           quant: updatedProduct.quant
+         })
         .then(() => res.json(updatedProduct))
         .catch((err) => {
           console.error('Error updating product:', err);
